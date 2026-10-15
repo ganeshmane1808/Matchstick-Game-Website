@@ -1,0 +1,1211 @@
+/* ==========================================================================
+   Matchstick Game: Beat the AI - Design System & Styles
+   Pure Vanilla CSS (Zero External Frameworks / Zero Dependencies)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design Tokens & Theme Variables
+   -------------------------------------------------------------------------- */
+:root {
+  /* Default: Dark Arcade / Warm Wood Theme */
+  --bg-primary: #0f1319;
+  --bg-secondary: #171d26;
+  --bg-card: rgba(26, 33, 44, 0.85);
+  --bg-card-hover: rgba(33, 42, 56, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.16);
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --accent-amber: #f59e0b;
+  --accent-amber-light: #fbbf24;
+  --accent-flame: #ef4444;
+  --accent-flame-dark: #dc2626;
+  --accent-green: #10b981;
+  --accent-blue: #3b82f6;
+
+  /* Matchstick Elements */
+  --match-head-gradient: radial-gradient(circle at 35% 30%, #f87171 0%, #dc2626 55%, #991b1b 100%);
+  --match-head-glow: 0 0 10px rgba(239, 68, 68, 0.6);
+  --match-stick-gradient: linear-gradient(90deg, #d97706 0%, #b45309 40%, #92400e 100%);
+  --match-stick-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: rgba(255, 255, 255, 1);
+  --bg-glass: rgba(0, 0, 0, 0.02);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-highlight: rgba(0, 0, 0, 0.14);
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+
+  --match-stick-shadow: 1px 2px 5px rgba(0, 0, 0, 0.18);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   2. Reset & Global Base
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  color-scheme: dark light;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Ambient Backlight Glows */
+.bg-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.25;
+}
+
+.glow-1 {
+  width: 450px;
+  height: 450px;
+  top: -100px;
+  right: -50px;
+  background: var(--accent-amber);
+}
+
+.glow-2 {
+  width: 500px;
+  height: 500px;
+  bottom: -150px;
+  left: -100px;
+  background: var(--accent-flame);
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   3. Header & Controls
+   -------------------------------------------------------------------------- */
+.app-header {
+  margin-bottom: 1.75rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.match-icon-badge {
+  font-size: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(245, 158, 11, 0.2));
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-text h1 {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-main) 60%, var(--accent-amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-text .subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-highlight);
+  transform: translateY(-2px);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent-amber);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Layout Grid (Sidebar + Main Board)
+   -------------------------------------------------------------------------- */
+.main-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Universal Card */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem;
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--border-highlight);
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. Scoreboard & Sidebar
+   -------------------------------------------------------------------------- */
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.scoreboard-card {
+  text-align: center;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 0.85rem;
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.score-value {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.human-score-box .score-value {
+  color: var(--accent-green);
+}
+
+.ai-score-box .score-value {
+  color: var(--accent-blue);
+}
+
+.score-divider {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  padding: 0 0.5rem;
+}
+
+.text-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.text-link-btn:hover {
+  color: var(--accent-flame);
+}
+
+/* Setup Panel */
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  background: var(--bg-secondary);
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.segment-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.6rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all var(--transition-fast);
+}
+
+.segment-btn strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.segment-hint {
+  font-size: 0.675rem;
+  opacity: 0.75;
+}
+
+.segment-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-glass);
+}
+
+.segment-btn.active {
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-highlight);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-amber), #d97706);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-amber-light), var(--accent-amber));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-subtle {
+  background: var(--bg-glass);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-subtle:hover {
+  color: var(--text-main);
+  border-color: var(--border-highlight);
+}
+
+/* Rules Card */
+.rules-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.rules-list li {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.rules-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0.25rem;
+  color: var(--accent-amber);
+  font-weight: bold;
+}
+
+.honesty-note {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.honesty-note strong {
+  color: var(--accent-amber-light);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.honesty-note p {
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   6. Game Arena & Matchsticks Pile
+   -------------------------------------------------------------------------- */
+.board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.arena-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Status Banner */
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+}
+
+.status-indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 10px var(--accent-green);
+  transition: background-color var(--transition-fast);
+}
+
+.status-banner.thinking .status-indicator-dot {
+  background: var(--accent-blue);
+  box-shadow: 0 0 10px var(--accent-blue);
+  animation: pulse-dot 1s infinite alternate;
+}
+
+.status-banner.game-over-human-loss .status-indicator-dot {
+  background: var(--accent-flame);
+  box-shadow: 0 0 10px var(--accent-flame);
+}
+
+@keyframes pulse-dot {
+  from { opacity: 0.4; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+/* Pile Container & Counter */
+.pile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
+  padding: 1.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-subtle);
+}
+
+.counter-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+
+.counter-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.counter-number {
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-amber);
+  text-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+  transition: transform var(--transition-fast);
+}
+
+.counter-number.updated {
+  transform: scale(1.15);
+}
+
+/* Visual Sticks Field */
+.sticks-field {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+  min-height: 125px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0.5rem;
+}
+
+/* Single Matchstick */
+.matchstick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+  transform-origin: bottom center;
+  transition: transform var(--transition-fast), opacity var(--transition-slow);
+}
+
+.matchstick:hover {
+  transform: translateY(-4px);
+}
+
+/* Matchstick Head */
+.match-head {
+  width: 14px;
+  height: 20px;
+  border-radius: 7px 7px 5px 5px;
+  background: var(--match-head-gradient);
+  box-shadow: var(--match-head-glow);
+  position: relative;
+  z-index: 2;
+  margin-bottom: -2px;
+}
+
+/* Matchstick Wooden Shaft */
+.match-body {
+  width: 8px;
+  height: 90px;
+  border-radius: 2px 2px 3px 3px;
+  background: var(--match-stick-gradient);
+  box-shadow: var(--match-stick-shadow);
+  position: relative;
+  z-index: 1;
+}
+
+/* Matchstick Removal Animation */
+.matchstick.removing {
+  opacity: 0;
+  transform: translateY(-38px) rotate(18deg) scale(0.7);
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Action Buttons & Hint
+   -------------------------------------------------------------------------- */
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.action-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.action-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  min-height: 85px;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-amber);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.action-btn:focus-visible {
+  outline: 2px solid var(--accent-amber);
+  outline-offset: 2px;
+}
+
+.action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-subtle);
+}
+
+.btn-sticks-preview {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 24px;
+}
+
+.mini-stick {
+  width: 4px;
+  height: 22px;
+  background: var(--accent-amber);
+  border-radius: 1px;
+  position: relative;
+}
+
+.mini-stick::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -1px;
+  width: 6px;
+  height: 8px;
+  background: var(--accent-flame);
+  border-radius: 3px 3px 2px 2px;
+}
+
+.action-btn .btn-text {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Hint Box */
+.hint-box {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.hint-box.hidden {
+  display: none;
+}
+
+.close-hint-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+}
+
+.close-hint-btn:hover {
+  color: var(--text-main);
+}
+
+/* --------------------------------------------------------------------------
+   8. Move History Log
+   -------------------------------------------------------------------------- */
+.move-log-section {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.15rem;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.log-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.round-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--bg-glass);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+}
+
+.log-stream {
+  max-height: 140px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-right: 0.35rem;
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+.log-stream::-webkit-scrollbar {
+  width: 5px;
+}
+
+.log-stream::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.log-stream::-webkit-scrollbar-thumb {
+  background: var(--border-highlight);
+  border-radius: var(--radius-full);
+}
+
+.log-entry {
+  font-size: 0.825rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  border-left: 3px solid transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.log-entry.human-move {
+  border-left-color: var(--accent-green);
+}
+
+.log-entry.ai-move {
+  border-left-color: var(--accent-blue);
+}
+
+.log-entry.system-entry {
+  border-left-color: var(--accent-amber);
+  color: var(--text-dim);
+}
+
+.log-time {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+/* --------------------------------------------------------------------------
+   9. "How the AI Thinks" Theory Section
+   -------------------------------------------------------------------------- */
+.theory-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.theory-details {
+  width: 100%;
+}
+
+.theory-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+
+.theory-summary::-webkit-details-marker {
+  display: none;
+}
+
+.theory-summary:hover {
+  background: var(--bg-glass);
+}
+
+.summary-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.theory-icon {
+  font-size: 1.5rem;
+}
+
+.summary-title h3 {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.summary-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.accordion-arrow {
+  font-size: 1.25rem;
+  color: var(--text-dim);
+  transition: transform var(--transition-fast);
+}
+
+.theory-details[open] .accordion-arrow {
+  transform: rotate(180deg);
+}
+
+.theory-content {
+  padding: 0 1.35rem 1.35rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.theory-content h4 {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  margin-top: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.formula-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: monospace;
+  font-size: 1rem;
+  color: var(--accent-amber-light);
+  text-align: center;
+  margin: 0.65rem 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.theory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.825rem;
+  text-align: left;
+}
+
+.theory-table th, .theory-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.theory-table th {
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  background: var(--bg-secondary);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.badge-loss {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-win {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.losing-row {
+  background: rgba(239, 68, 68, 0.04);
+}
+
+/* --------------------------------------------------------------------------
+   10. Modal Dialog (Game Over)
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 100;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem 2rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+.modal-message {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.modal-stat-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-stat-label {
+  font-size: 0.725rem;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.modal-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.btn-lg {
+  padding: 0.95rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   11. Footer
+   -------------------------------------------------------------------------- */
+.app-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* --------------------------------------------------------------------------
+   12. Keyframes & Animations
+   -------------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   13. Responsive Media Queries (Mobile First Down to 380px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar-column {
+    order: 2;
+  }
+
+  .board-column {
+    order: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .brand-text h1 {
+    font-size: 1.45rem;
+  }
+
+  .brand-text .subtitle {
+    font-size: 0.775rem;
+  }
+
+  .match-icon-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 1.6rem;
+  }
+
+  .counter-number {
+    font-size: 3.25rem;
+  }
+
+  .sticks-field {
+    gap: 8px;
+    min-height: 105px;
+  }
+
+  .match-head {
+    width: 11px;
+    height: 16px;
+  }
+
+  .match-body {
+    width: 6px;
+    height: 72px;
+  }
+
+  .action-buttons-grid {
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    padding: 0.85rem 0.35rem;
+    min-height: 75px;
+  }
+
+  .action-btn .btn-text {
+    font-size: 0.95rem;
+  }
+
+  .mini-stick {
+    height: 16px;
+    width: 3px;
+  }
+
+  .mini-stick::before {
+    height: 6px;
+    width: 5px;
+  }
+
+  .modal-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .modal-title {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .sticks-field {
+    gap: 6px;
+  }
+
+  .match-head {
+    width: 9px;
+    height: 14px;
+  }
+
+  .match-body {
+    width: 5px;
+    height: 60px;
+  }
+
+  .action-btn {
+    min-height: 68px;
+    padding: 0.75rem 0.25rem;
+  }
+
+  .action-btn .btn-text {
+    font-size: 0.85rem;
+  }
+}

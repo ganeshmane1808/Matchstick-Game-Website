@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Matchstick Game (AI vs Human) - Interactive Nim / Misère Game Theory Case Study. Play against a mathematical AI algorithm!">
+  <title>Matchstick Game: Beat the AI</title>
+  
+  <!-- Modern Google Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="bg-glow glow-1" aria-hidden="true"></div>
+  <div class="bg-glow glow-2" aria-hidden="true"></div>
+
+  <div class="app-container">
+    <!-- Main Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand">
+          <span class="match-icon-badge" aria-hidden="true">🔥</span>
+          <div class="brand-text">
+            <h1>Matchstick Game</h1>
+            <p class="subtitle">Beat the AI &bull; Impartial Game Theory Case Study</p>
+          </div>
+        </div>
+        <div class="header-controls">
+          <button id="themeToggleBtn" class="icon-btn" aria-label="Toggle light or dark theme" title="Toggle Theme">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <button id="soundToggleBtn" class="icon-btn" aria-label="Toggle sound effects" title="Toggle Sound">
+            <span id="soundIcon">🔊</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-layout">
+      
+      <!-- Left Column: Setup & Information -->
+      <aside class="sidebar-column">
+        
+        <!-- Scoreboard Card -->
+        <section class="card scoreboard-card" aria-label="Scoreboard">
+          <h2 class="card-title">Scoreboard</h2>
+          <div class="score-display">
+            <div class="score-box human-score-box">
+              <span class="score-label">You (Human)</span>
+              <span id="humanScore" class="score-value">0</span>
+            </div>
+            <div class="score-divider">:</div>
+            <div class="score-box ai-score-box">
+              <span class="score-label">Computer (AI)</span>
+              <span id="computerScore" class="score-value">0</span>
+            </div>
+          </div>
+          <button id="resetScoreBtn" class="text-link-btn" title="Reset Scoreboard">Reset Scores</button>
+        </section>
+
+        <!-- Game Setup Card -->
+        <section class="card setup-card" aria-label="Game Setup">
+          <h2 class="card-title">New Game Setup</h2>
+          
+          <div class="form-group">
+            <label class="form-label">Difficulty Mode</label>
+            <div class="segmented-control" role="radiogroup" aria-label="Difficulty">
+              <button type="button" class="segment-btn active" data-difficulty="hard" role="radio" aria-checked="true" id="diffHardBtn">
+                <strong>Hard</strong>
+                <span class="segment-hint">Math AI Strategy</span>
+              </button>
+              <button type="button" class="segment-btn" data-difficulty="easy" role="radio" aria-checked="false" id="diffEasyBtn">
+                <strong>Easy</strong>
+                <span class="segment-hint">Random Moves</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Who Moves First?</label>
+            <div class="segmented-control" role="radiogroup" aria-label="Starting Player">
+              <button type="button" class="segment-btn active" data-starter="human" role="radio" aria-checked="true" id="startHumanBtn">
+                <strong>You</strong>
+                <span class="segment-hint">Human Starts</span>
+              </button>
+              <button type="button" class="segment-btn" data-starter="computer" role="radio" aria-checked="false" id="startAiBtn">
+                <strong>Computer</strong>
+                <span class="segment-hint">AI Starts</span>
+              </button>
+            </div>
+          </div>
+
+          <button id="startGameBtn" class="btn btn-primary btn-block">
+            <span class="btn-icon">⚡</span> Start New Game
+          </button>
+        </section>
+
+        <!-- Rules & Strategy Note Card -->
+        <section class="card rules-card" aria-label="Rules and Info">
+          <h2 class="card-title">Game Rules</h2>
+          <ul class="rules-list">
+            <li><strong>21 matchsticks</strong> on the table to start.</li>
+            <li>Players alternate turns, taking <strong>1, 2, 3, or 4 sticks</strong>.</li>
+            <li>You can never take more sticks than remain.</li>
+            <li><strong>Misère Rule:</strong> The player forced to take the <em>last stick</em> <strong>LOSES</strong>.</li>
+          </ul>
+
+          <div class="honesty-note">
+            <span class="note-icon">💡</span>
+            <div class="note-content">
+              <strong>Honest Strategy Note:</strong>
+              <p>In <strong>Hard mode</strong>, the computer is <em>unbeatable</em> if you move first. However, if the computer moves first, you can beat the AI with perfect play!</p>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Center / Right Column: Active Game Board -->
+      <div class="board-column">
+        
+        <!-- Game Arena Card -->
+        <section class="card arena-card" aria-label="Matchstick Arena">
+          
+          <!-- Status Banner -->
+          <div class="status-banner" id="statusBanner" role="status" aria-live="polite">
+            <div class="status-indicator-dot" id="statusDot"></div>
+            <span id="statusText" class="status-text">Ready to play! Make your move.</span>
+          </div>
+
+          <!-- Counter and Visual Sticks Board -->
+          <div class="pile-container">
+            <div class="counter-badge">
+              <span class="counter-label">Sticks Remaining</span>
+              <span id="stickCounter" class="counter-number">21</span>
+            </div>
+
+            <!-- Visual Matchstick Field -->
+            <div class="sticks-field" id="sticksField" aria-label="Matchsticks pile" role="region">
+              <!-- Dynamically generated matchsticks -->
+            </div>
+          </div>
+
+          <!-- Player Controls -->
+          <div class="controls-container">
+            <div class="action-heading">
+              <span id="actionPromptText">Select sticks to remove:</span>
+              <button id="hintBtn" class="btn btn-subtle btn-sm" title="Get a mathematical strategy hint">
+                <span>💡 Hint</span>
+              </button>
+            </div>
+
+            <!-- Hint Popover Box -->
+            <div id="hintBox" class="hint-box hidden" role="alert">
+              <span id="hintText"></span>
+              <button id="closeHintBtn" class="close-hint-btn" aria-label="Close hint">&times;</button>
+            </div>
+
+            <div class="action-buttons-grid" role="group" aria-label="Move Options">
+              <button class="action-btn" id="take1Btn" data-count="1" aria-label="Take 1 matchstick">
+                <span class="btn-sticks-preview">
+                  <span class="mini-stick"></span>
+                </span>
+                <span class="btn-text">Take 1</span>
+              </button>
+
+              <button class="action-btn" id="take2Btn" data-count="2" aria-label="Take 2 matchsticks">
+                <span class="btn-sticks-preview">
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                </span>
+                <span class="btn-text">Take 2</span>
+              </button>
+
+              <button class="action-btn" id="take3Btn" data-count="3" aria-label="Take 3 matchsticks">
+                <span class="btn-sticks-preview">
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                </span>
+                <span class="btn-text">Take 3</span>
+              </button>
+
+              <button class="action-btn" id="take4Btn" data-count="4" aria-label="Take 4 matchsticks">
+                <span class="btn-sticks-preview">
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                  <span class="mini-stick"></span>
+                </span>
+                <span class="btn-text">Take 4</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Move History Log -->
+          <div class="move-log-section">
+            <div class="log-header">
+              <h3>Move History</h3>
+              <span id="roundCounter" class="round-badge">Round 1</span>
+            </div>
+            <div class="log-stream" id="logStream" tabindex="0" role="log" aria-label="Move history stream">
+              <div class="log-entry system-entry">Game started with 21 matchsticks.</div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- "How the AI Thinks" Theory & Proof Section -->
+        <section class="card theory-card">
+          <details class="theory-details" id="theoryAccordion">
+            <summary class="theory-summary">
+              <div class="summary-title">
+                <span class="theory-icon">🧠</span>
+                <div>
+                  <h3>How the AI Thinks: Algorithm & Mathematical Proof</h3>
+                  <p class="summary-subtitle">Combinatorial Game Theory, Misère Nim & P-Positions</p>
+                </div>
+              </div>
+              <span class="accordion-arrow" aria-hidden="true">▾</span>
+            </summary>
+
+            <div class="theory-content">
+              <h4>1. Misère Terminal Condition</h4>
+              <p>Under misère play, taking the final stick loses. Therefore, having <strong>1 stick left</strong> on your turn is an unavoidable <em>loss</em> (a <strong>P-position</strong> / Previous-player-winning position).</p>
+
+              <h4>2. Losing Positions ($n \pmod 5 = 1$)</h4>
+              <p>From $n \in \{2, 3, 4, 5\}$, the moving player can choose $\{1, 2, 3, 4\}$ sticks respectively to leave exactly $1$ stick for the opponent. Thus, $\{2, 3, 4, 5\}$ are winning positions (<strong>N-positions</strong>).</p>
+              <p>From $n = 6$, any move of $1..4$ leaves $5, 4, 3,$ or $2$ sticks, enabling the opponent to force $1$. Hence, $6$ is a losing position. By induction, the losing positions up to 21 are:</p>
+              
+              <div class="table-responsive">
+                <table class="theory-table">
+                  <thead>
+                    <tr>
+                      <th>Sticks ($n$)</th>
+                      <th>$n \pmod 5$</th>
+                      <th>State Type</th>
+                      <th>Optimal Response</th>
+                    </tr>
+                  </thead>
+                  <tbody id="theoryTableBody">
+                    <!-- Populated dynamically / statically -->
+                    <tr class="losing-row"><td><strong>21</strong></td><td>1</td><td><span class="badge badge-loss">Losing (P)</span></td><td>Random if AI starts; human mistake required</td></tr>
+                    <tr class="winning-row"><td><strong>17 - 20</strong></td><td>2, 3, 4, 0</td><td><span class="badge badge-win">Winning (N)</span></td><td>Take $(n - 1) \pmod 5 \to$ leaves 16</td></tr>
+                    <tr class="losing-row"><td><strong>16</strong></td><td>1</td><td><span class="badge badge-loss">Losing (P)</span></td><td>AI counter-move: $5 - x$</td></tr>
+                    <tr class="winning-row"><td><strong>12 - 15</strong></td><td>2, 3, 4, 0</td><td><span class="badge badge-win">Winning (N)</span></td><td>Take $(n - 1) \pmod 5 \to$ leaves 11</td></tr>
+                    <tr class="losing-row"><td><strong>11</strong></td><td>1</td><td><span class="badge badge-loss">Losing (P)</span></td><td>AI counter-move: $5 - x$</td></tr>
+                    <tr class="winning-row"><td><strong>7 - 10</strong></td><td>2, 3, 4, 0</td><td><span class="badge badge-win">Winning (N)</span></td><td>Take $(n - 1) \pmod 5 \to$ leaves 6</td></tr>
+                    <tr class="losing-row"><td><strong>6</strong></td><td>1</td><td><span class="badge badge-loss">Losing (P)</span></td><td>AI counter-move: $5 - x$</td></tr>
+                    <tr class="winning-row"><td><strong>2 - 5</strong></td><td>2, 3, 4, 0</td><td><span class="badge badge-win">Winning (N)</span></td><td>Take $(n - 1) \pmod 5 \to$ leaves 1</td></tr>
+                    <tr class="losing-row"><td><strong>1</strong></td><td>1</td><td><span class="badge badge-loss">Losing (P)</span></td><td>Must take 1 stick $\to$ <strong>LOSES</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4>3. The $5 - x$ Invariant</h4>
+              <p>Whenever the human takes $x$ sticks from a losing pile, the AI immediately counters with $5 - x$. Because $x + (5 - x) = 5$, the pile monotonically drops:</p>
+              <div class="formula-box">
+                $$21 \xrightarrow{-5} 16 \xrightarrow{-5} 11 \xrightarrow{-5} 6 \xrightarrow{-5} 1$$
+              </div>
+              <p>The human is mathematically trapped and must take the terminal stick.</p>
+            </div>
+          </details>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Matchstick Game &bull; Built with pure HTML5, CSS3, &amp; Vanilla JavaScript &bull; Hosted on GitHub Pages / Netlify</p>
+    </footer>
+  </div>
+
+  <!-- Game Over Modal Overlay -->
+  <div id="gameOverModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div id="modalIcon" class="modal-icon">🏆</div>
+      <h2 id="modalTitle" class="modal-title">You Won!</h2>
+      <p id="modalMessage" class="modal-message">The computer was forced to take the last matchstick.</p>
+      
+      <div class="modal-stats">
+        <div class="modal-stat-box">
+          <span class="modal-stat-label">Winner</span>
+          <span id="modalWinnerName" class="modal-stat-value">Human</span>
+        </div>
+        <div class="modal-stat-box">
+          <span class="modal-stat-label">Total Moves</span>
+          <span id="modalTotalMoves" class="modal-stat-value">8</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="playAgainBtn" class="btn btn-primary btn-lg btn-block">
+          Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
